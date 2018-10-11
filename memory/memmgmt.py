@@ -1,23 +1,27 @@
 import numpy as np
 import time
+import threading
 
 class MemoryManagementA:
     row_size = 7
     column_size = 2
+    lock = threading.Lock()
 
     management = np.zeros(shape=(row_size, column_size), dtype='int32')
 
     @classmethod
-    def set_mgmt(cls, pageFrameIndex, pid): # change name pls
-        MemoryManagementA.sweep_decriment()
-        MemoryManagementA.management[pageFrameIndex][0] = pid
-        MemoryManagementA.management[pageFrameIndex][1] = 17
+    def set_mgmt(cls, pageFrameIndex, pid):
+        with MemoryManagementA.lock:
+            MemoryManagementA.sweep_decriment()
+            MemoryManagementA.management[pageFrameIndex][0] = pid
+            MemoryManagementA.management[pageFrameIndex][1] = 17
 
     @classmethod
     def unset_mgmt(cls, pageFrameIndex):
-        #remove the pid cell to zero
-        MemoryManagementA.management[pageFrameIndex][0] = -1
-        MemoryManagementA.management[pageFrameIndex][1] = 0  # reset counter 
+        with MemoryManagementA.lock:
+            #remove the pid cell to zero
+            MemoryManagementA.management[pageFrameIndex][0] = -1
+            MemoryManagementA.management[pageFrameIndex][1] = 0  # reset counter 
 
     # FIFO
     # @classmethod
