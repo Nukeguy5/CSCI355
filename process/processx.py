@@ -6,6 +6,12 @@ from memory.memmgr import MemoryA
 class Process:
     pid_counter = 11
 
+    @classmethod
+    def get_pid(cls):
+        aa = Process.pid_counter
+        Process.pid_counter += 23
+        return aa
+
     def __init__(self, initialNbrOfPages):
         self.page_table = np.zeros(shape=(initialNbrOfPages, 1), dtype='int64')
         self.page_frame_vectors = [0] * initialNbrOfPages
@@ -16,6 +22,8 @@ class Process:
 
         self.available_space = initialNbrOfPages
         self.mypid = Process.get_pid()
+
+        MemoryManagementA.register_process(self)
 
     def load_pages(self, listOfPages, nbrPages):
         listPageFrameVector = MemoryA.get_mem(self.mypid, nbrPages)
@@ -51,12 +59,13 @@ class Process:
     def get_my_pid(self):
         return self.mypid
 
-    @classmethod
-    def get_pid(cls):
-        aa = Process.pid_counter
-        Process.pid_counter += 23
-        return aa
-
+    def release_page_frame(self, page_frame):
+        rows = self.page_table.shape[0]
+        for row in range(rows):
+            if self.page_table[row] == page_frame:
+                self.page_table[row] = -1
+                self.page_frame_vectors[row] = 0
+                break
 
 # temp = np.zeros(shape=(3, 6), dtype='int64')
 # print(temp)

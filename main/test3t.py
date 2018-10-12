@@ -57,7 +57,7 @@ def p3thread():
 # fourth process load
 def p4thread():
     p4 = Process(4)
-    p4.load_pages([0, 1, 2], 3)
+    p4.load_pages([0, 1], 2)
     modify(p4)
     printAll("fourth process p4", p4)
     return

@@ -8,6 +8,11 @@ class MemoryManagementA:
     lock = threading.Lock()
 
     management = np.zeros(shape=(row_size, column_size), dtype='int32')
+    pid_dict = {}
+
+    @classmethod
+    def register_process(cls, process_obj):
+        MemoryManagementA.pid_dict[process_obj.mypid] = process_obj
 
     @classmethod
     def set_mgmt(cls, pageFrameIndex, pid):
@@ -38,7 +43,8 @@ class MemoryManagementA:
 
         else:
             # remove oldest pid and return list of newly freed space
-            free_space = MemoryManagementA.least_recently_used(nbrPages)
+            free_space, old_pid = MemoryManagementA.least_recently_used(nbrPages)
+            MemoryManagementA.inform_process(free_space, old_pid)
             return free_space
             # => [0, 2, 3, ...] <- list of free memory indexs
 
@@ -82,6 +88,17 @@ class MemoryManagementA:
         return free_space
 
     @classmethod
+    def find_process(cls, page_frame):
+        pid = MemoryManagementA.pid_dict[page_frame]
+        return pid
+
+    @classmethod
+    def inform_process(cls, removed_idxs, removed_pid):
+        process_obj = MemoryManagementA.find_process(removed_pid)
+        for idx in removed_idxs:
+            process_obj.release_page_frame(idx)
+
+    @classmethod
     def least_recently_used(cls, nbrPages):
         oldest_pid = MemoryManagementA.find_smallest_count()
         pid_idxs = MemoryManagementA.find_pid_idxs(oldest_pid)
@@ -102,7 +119,7 @@ class MemoryManagementA:
             else:
                 enough_mem = True
         
-        return removed_idxs
+        return removed_idxs, oldest_pid
     
     @classmethod
     def find_smallest_count(cls):
