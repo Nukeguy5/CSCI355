@@ -64,16 +64,16 @@ def p4thread():
 
 t1 = threading.Thread(target=p1thread, args=())
 t1.start()
-t1.join()
+# t1.join()
 
 t2 = threading.Thread(target=p2thread, args=())
 t2.start()
-t2.join()
+# t2.join()
 
 t3 = threading.Thread(target=p3thread, args=())
 t3.start()
-t3.join()
+# t3.join()
 
 t4 = threading.Thread(target=p4thread, args=())
 t4.start()
-t4.join()
+# t4.join()
