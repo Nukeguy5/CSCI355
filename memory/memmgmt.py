@@ -12,7 +12,8 @@ class MemoryManagementA:
 
     @classmethod
     def register_process(cls, process_obj):
-        MemoryManagementA.pid_dict[process_obj.mypid] = process_obj
+        with MemoryManagementA.lock:
+            MemoryManagementA.pid_dict[process_obj.mypid] = process_obj
 
     @classmethod
     def set_mgmt(cls, pageFrameIndex, pid):
@@ -89,7 +90,9 @@ class MemoryManagementA:
 
     @classmethod
     def find_process(cls, page_frame):
-        pid = MemoryManagementA.pid_dict[page_frame]
+        with MemoryManagementA.lock:
+            pid = MemoryManagementA.pid_dict[page_frame]
+        
         return pid
 
     @classmethod
