@@ -6,7 +6,6 @@ import numpy as np
 
 column_size = 8
 row_size = 4
-global memaa
 memaa = np.empty(shape=(row_size, column_size), dtype='int8')
 
 # Added
