@@ -8,17 +8,7 @@ column_size = 8
 row_size = 4
 memaa = np.empty(shape=(row_size, column_size), dtype='int8')
 
-# Added
-def convert_npArray(np_arr):
-    arr = []
-    for np_row in np_arr:
-        row = sharedctypes.RawArray('b', np_row)
-        arr.append(row)
-
-    return arr
-
 def modifyprint(arr, vv):
-    # np_arr = np.asarray(arr)  # Added
     rsize = arr.shape[0]
     csize = arr.shape[1]
     
@@ -38,8 +28,6 @@ def f(arr, va):
 if __name__ == '__main__':
     print(memaa)
     viewa = memaa[0:2, :column_size]
-    # s_memaa = convert_npArray(memaa)  # Added
-    # s_memaa = sharedctypes.RawArray('B', memaa)
 
     modifyprint(viewa, 11)
 
@@ -47,6 +35,5 @@ if __name__ == '__main__':
     p.start()
     p.join()
 
-    # memaa = np.asarray(s_memaa)
     print("back to main - print whole array")
     print(memaa)
