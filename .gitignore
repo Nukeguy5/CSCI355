@@ -1,5 +1,7 @@
 
 # Folders
+/__pycache__
+/.vscode
 /Archive
 /Lecture Notes
 
