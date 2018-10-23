@@ -1,4 +1,3 @@
-# TODO: Make numpy array shareable memory
 
 from multiprocessing import Process, Value, Array, sharedctypes
 import os 

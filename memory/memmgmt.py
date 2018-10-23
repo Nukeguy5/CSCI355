@@ -53,7 +53,7 @@ class MemoryManagementA:
             # free_space = MemoryManagementA.remove_oldest_pid()
             # enough_memory = False
             # while not enough_memory:
-            #     # TODO: Use 'oldest_pid' to alert the pid that memory has been released
+            #     
             #     # removed_pid_idxs, oldest_pid = MemoryManagementA.remove_oldest_pid()
 
 

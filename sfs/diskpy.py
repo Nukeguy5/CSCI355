@@ -5,6 +5,7 @@ class Disk():
     def __init__(self, filename, nblocks = 100):
         self.filename = filename
         self.nblocks = nblocks
+        # TODO: Double check that will will be using a list as structure
         self.disk = []*nblocks
 
     def disk_open(self, filename):
