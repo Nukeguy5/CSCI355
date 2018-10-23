@@ -1,8 +1,0 @@
-fs_format()
-fs_debug()
-fs_mount()
-fs_create()
-fs_delete( file )
-fs_getsize( file )
-fs_read( file, length, offset )
-fs_write( file, data, length, offset )
