@@ -5,7 +5,8 @@ class Disk():
     def __init__(self, filename, nblocks = 100):
         self.filename = filename
         self.nblocks = nblocks
-    
+        self.disk = []*nblocks
+
     def disk_open(self, filename):
         pass
 
@@ -13,10 +14,16 @@ class Disk():
         return self.nblocks
     
     def disk_read(self, blocknum):
-        pass
+        try:
+            return self.disk[blocknum]
+        except IndexError:
+            print("ERROR: blocknum", blocknum, "is too big")
     
     def disk_write(self, blocknum, data):
-        pass
+        try:
+            self.disk[blocknum] = data
+        except IndexError:
+            print("ERROR: blocknum", blocknum, "is too big")
 
     def disk_close(self):
         pass
