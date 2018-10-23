@@ -1,8 +1,23 @@
-fs_format()
-fs_debug()
-fs_mount()
-fs_create()
-fs_delete( file )
-fs_getsize( file )
-fs_read( file, length, offset )
-fs_write( file, data, length, offset )
+def fs_format():
+    pass
+
+def fs_debug():
+    pass
+
+def fs_mount():
+    pass
+
+def fs_create():
+    pass
+
+def fs_delete(file):
+    pass
+
+def fs_getsize(file):
+    pass
+
+def fs_read(file, length, offset):
+    pass
+
+def fs_write(file, data, length, offset):
+    pass
