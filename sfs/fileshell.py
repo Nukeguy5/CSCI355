@@ -1,4 +1,6 @@
 
+import diskpy
+
 def fs_format():
     pass
 
