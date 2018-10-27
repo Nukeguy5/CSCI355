@@ -1,16 +1,22 @@
 
+import numpy as np
+from threading import Lock
+
 class Disk():
-    DISK_BLOCK_SIZE = 4096 # change to any size but make sure it is the right increment
-    
-    def __init__(self, filename, nblocks = 100):
+    DISK_BLOCK_SIZE = 8 # change to any size but make sure it is the right increment
+    DISK_LOCK = Lock()
+
+    def __init__(self, filename, nblocks):
         self.filename = filename
         self.nblocks = nblocks
-        self.disk = []*nblocks
+        self.disk = np.zeros(shape=(nblocks, Disk.DISK_BLOCK_SIZE), dtype='int32')
 
     def disk_open(self, filename):
-        pass
+        Disk.DISK_LOCK.acquire()
 
     def disk_size(self):
+        # print("Disk size:", self.nblocks*Disk.DISK_BLOCK_SIZE, "bytes")
+        # print("Number of blocks on disk:", self.nblocks)
         return self.nblocks
     
     def disk_read(self, blocknum):
@@ -26,4 +32,4 @@ class Disk():
             print("ERROR: blocknum", blocknum, "is too big")
 
     def disk_close(self):
-        pass
+        Disk.DISK_LOCK.release()
