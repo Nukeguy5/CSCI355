@@ -23,13 +23,24 @@ class Disk():
     def disk_size(self):
         # print("Disk size:", self.nblocks*Disk.DISK_BLOCK_SIZE, "bytes")
         # print("Number of blocks on disk:", self.nblocks)
-        return self.nblocks
+        return self.nblocks*Disk.DISK_BLOCK_SIZE
     
     def disk_read(self, blocknum):
-        try:
-            return self.disk[blocknum]
-        except IndexError:
-            print("ERROR: blocknum", blocknum, "is too big")
+        assert(blocknum <= self.nblocks), "ERROR: Blocknum {} is too large.".format(blocknum)
+        
+        start_addr = blocknum*Disk.DISK_BLOCK_SIZE
+        block_size = Disk.DISK_BLOCK_SIZE
+        block_raw = []  # List of binary data
+        with self.DISK_LOCK:
+            with open(self.filename, 'rb') as f:
+                f.seek(start_addr)  # Start reading from this address
+                for i in range(block_size):
+                    data = f.read(1)  # Read one byte of data at a time
+                    block_raw.append(data)
+
+        # Convert from list of bytes to list of ints
+        block_data = list(map(lambda x: int.from_bytes(x, byteorder='little'), block_raw))
+        return block_data
     
     def disk_write(self, blocknum, data):
         try:
@@ -45,3 +56,4 @@ class Inode():
     pass
 
 disk1 = Disk('disk1.bin', 16)
+disk1.disk_read(16)
