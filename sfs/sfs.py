@@ -1,6 +1,5 @@
 
 from diskpy import Disk
-import click
 import numpy as np
 from threading import Lock
 
@@ -10,9 +9,11 @@ file_table = {}
 fs_lock = Lock()
 
 def fs_format():
+    print("Formatting...")
     with fs_lock:
         for i in range(len(fs_bitmap)):
             fs_bitmap[i] = 0
+    print("Format Complete.")
 
 def fs_debug():
     print(' ------ Disk Mgmt -------')
@@ -45,6 +46,3 @@ def fs_read(file, length, offset):
 def fs_write(file, data, length, offset):
     with fs_lock:
         fs_bitmap[offset] = 1
-
-
-fs_debug()

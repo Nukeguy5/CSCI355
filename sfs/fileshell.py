@@ -1,12 +1,29 @@
 
 import click
-import diskpy
 import sfs
 
 @click.command()
 def help():
-    print("Commands are:")
-    print("\tformat")
-    print("\tmount")
-    print("\tdebug")
-    print("\tcreate")
+    click.echo("\nCommands are:")
+    click.echo("\tformat")
+    click.echo("\tmount")
+    click.echo("\tdebug")
+    click.echo("\tcreate")
+    click.echo("")
+
+@click.command()
+def format():
+    sfs.fs_format()
+
+
+@click.command()
+def mount():
+    sfs.fs_format()
+
+@click.command()
+def debug():
+    sfs.fs_debug()
+
+@click.command()
+def create():
+    sfs.fs_create()

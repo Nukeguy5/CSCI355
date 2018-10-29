@@ -9,10 +9,13 @@ class Disk():
     def __init__(self, filename, nblocks):
         self.filename = filename
         self.nblocks = nblocks
-        self.disk = np.zeros(shape=(nblocks, Disk.DISK_BLOCK_SIZE), dtype='int32')
+        self.disk = np.zeros(shape=(nblocks, Disk.DISK_BLOCK_SIZE), dtype='int16')
+        self.DISK_LOCK = Disk.DISK_LOCK
 
     def disk_open(self, filename):
-        Disk.DISK_LOCK.acquire()
+        with self.DISK_LOCK:
+            with open(filename, 'wb') as f:
+                f.write(self.disk)
 
     def disk_size(self):
         # print("Disk size:", self.nblocks*Disk.DISK_BLOCK_SIZE, "bytes")
@@ -32,9 +35,11 @@ class Disk():
             print("ERROR: blocknum", blocknum, "is too big")
 
     def disk_close(self):
-        Disk.DISK_LOCK.release()
+        self.DISK_LOCK.release()
 
 
-# class Inode():
-#     offset =     
-#     pass
+class Inode():
+    pass
+
+disk1 = Disk('disk1.bin', 16)
+disk1.disk_open('disk1.bin')
