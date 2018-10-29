@@ -33,3 +33,8 @@ class Disk():
 
     def disk_close(self):
         Disk.DISK_LOCK.release()
+
+
+# class Inode():
+#     offset =     
+#     pass
