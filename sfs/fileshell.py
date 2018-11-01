@@ -38,7 +38,7 @@ def command_parse(command):
             print(size)
         
         elif clist[0] == 'read_script':
-            read_script('/Users/nukeguy5/Desktop/Operating Systems - CSCI355/sfs/' + clist[1])
+            read_script(clist[1])
 
         else:
             raise Exception("Command not found...")
