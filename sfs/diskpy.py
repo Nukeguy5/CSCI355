@@ -67,9 +67,26 @@ class Disk():
         else:
             data = bytearray(data)
 
-        with open(self.disk_name, 'wb') as d:
-            self.disk[blocknum] = data
-            d.write(self.disk)
+        with open(self.disk_name, 'r+b') as d:
+
+            # Check data length to fit in block
+            def _write_to_nblocks(blocknum, data):
+                d.seek(0)
+                data_len = len(data)
+                block_size = Disk.DISK_BLOCK_SIZE
+                if data_len <= block_size:
+                    self.disk[blocknum][:data_len] = data
+                    d.write(self.disk)
+                    return
+                else:
+                    data_remaining = data[block_size:data_len]
+                    data = data[:block_size]
+                    self.disk[blocknum] = data
+                    d.write(self.disk)
+                    blocknum += 1
+                    return _write_to_nblocks(blocknum, data_remaining)
+
+            _write_to_nblocks(blocknum, data)
 
     @classmethod
     def disk_close(self):

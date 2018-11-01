@@ -2,7 +2,7 @@
 from diskpy import Disk
 import time
 
-# disk1 = Disk('disk1.bin', 16)
+disk1 = Disk('disk1.bin', 16)
 mydisk = None
 
 def read_script(filename):
@@ -21,8 +21,8 @@ def command_parse(command):
 
     try:
         if clist[0] == 'disk_open':
-            disk_name = clist[1]
-            mydisk = Disk.disk_open(disk_name) 
+            filepath = ' '.join(clist[1:])
+            mydisk = Disk.disk_open(filepath) 
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
@@ -36,7 +36,10 @@ def command_parse(command):
 
         elif clist[0] == 'disk_size':
             size = mydisk.disk_size()
-            print(size)
+            total_bytes = size*Disk.DISK_BLOCK_SIZE
+            print('Disk:', mydisk.disk_name)
+            print('Blocks:', size)
+            print('Bytes:', total_bytes)
         
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
@@ -62,8 +65,8 @@ def usage():
 
 if __name__ == '__main__':
     command = ''
+    usage()
     while True:
-        usage()
         command = input('sfs > ')
         if command == 'exit':
             break
