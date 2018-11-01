@@ -2,6 +2,7 @@
 from diskpy import Disk
 import time
 
+# disk1 = Disk('disk1.bin', 16)
 mydisk = None
 
 def read_script(filename):
@@ -29,15 +30,17 @@ def command_parse(command):
 
         elif clist[0] == 'disk_write':
             blocknum = int(clist[1])
-            data = ''.join(clist[2:]) 
-            print("Writing", data, "to disk...") 
+            data = ' '.join(clist[2:]) 
+            print("Writing [", data, "] to disk...") 
+            mydisk.disk_write(blocknum, data)
 
         elif clist[0] == 'disk_size':
             size = mydisk.disk_size()
             print(size)
         
         elif clist[0] == 'read_script':
-            read_script(clist[1])
+            filepath = ' '.join(clist[1:])
+            read_script(filepath)
 
         else:
             raise Exception("Command not found...")
@@ -54,6 +57,7 @@ def usage():
     print('\tdisk_size')
     print('\tread_script <script file path>')
     print('\texit')
+    print()
 
 
 if __name__ == '__main__':
@@ -61,6 +65,6 @@ if __name__ == '__main__':
     while True:
         usage()
         command = input('sfs > ')
-        if command != 'exit':
+        if command == 'exit':
             break
         command_parse(command)
