@@ -1,6 +1,6 @@
 
 import numpy as np
-from threading import Lock
+# from threading import Lock
 
 class Disk():
     DISK_BLOCK_SIZE = 16 # change to any size but make sure it is the right increment
@@ -26,16 +26,17 @@ class Disk():
         
         start_addr = blocknum*Disk.DISK_BLOCK_SIZE
         block_size = Disk.DISK_BLOCK_SIZE
-        block_raw = []  # List of binary data
+        block_data = []  # List of binary data
 
         with open(self.disk_name, 'rb') as d:
             d.seek(start_addr)  # Start reading from this address
             for _ in range(block_size):
-                data = d.read(1)  # Read one byte of data at a time
-                block_raw.append(data)
+                byte = d.read(1)  # Read one byte of data at a time
+                data = int.from_bytes(byte, byteorder='big')
+                block_data.append(data)
 
-        # Convert from list of bytes to list of ints
-        block_data = list(map(lambda x: int.from_bytes(x, byteorder='little'), block_raw))
+        # # Convert from list of bytes to list of ints
+        # block_data = list(map(lambda x: int.from_bytes(x, byteorder='little'), block_raw))
         return block_data
     
     def disk_write(self, blocknum, data):
