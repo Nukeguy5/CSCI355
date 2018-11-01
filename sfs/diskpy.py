@@ -13,6 +13,8 @@ class Disk():
         with open(self.disk_name, 'wb') as d:
             d.write(self.disk)
 
+    # wait for file system
+    # this refers to files being written and read by the filesystem
     def disk_open(self, filename):
         pass
 
@@ -37,6 +39,7 @@ class Disk():
         return block_data
     
     def disk_write(self, blocknum, data):
+        # Check length of data in the filesystem
         assert(blocknum <= self.nblocks), "ERROR: blocknum {} is too big".format(blocknum)
 
         # Check the data type to determine how to convert to binary
@@ -49,6 +52,8 @@ class Disk():
             self.disk[blocknum] = data
             d.write(self.disk)
 
+    # wait for file system
+    # this refers to files being written and read by the filesystem
     def disk_close(self):
         pass
 
