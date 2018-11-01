@@ -2,7 +2,7 @@
 from diskpy import Disk
 import time
 
-disk1 = Disk('disk1.bin', 16)
+# disk1 = Disk('disk1.bin', 16)
 mydisk = None
 
 def read_script(filename):
@@ -22,7 +22,12 @@ def command_parse(command):
     try:
         if clist[0] == 'disk_open':
             filepath = ' '.join(clist[1:])
-            mydisk = Disk.disk_open(filepath) 
+            mydisk = Disk.disk_open(filepath)
+
+        elif clist[0] == 'disk_create':
+            disk_name = clist[1]
+            nblocks = clist[2]
+            mydisk = Disk(disk_name, nblocks)
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
@@ -54,6 +59,7 @@ def command_parse(command):
 def usage():
     # file = open_file('diskpy.py')
     print('\nCommands:')
+    print('\tdisk_create <new disk name> <number of blocks>')
     print('\tdisk_open <disk file path>')
     print('\tdisk_read <block number>')
     print('\tdisk_write <block number> <data to write>')
