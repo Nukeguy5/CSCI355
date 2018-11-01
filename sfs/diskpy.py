@@ -4,19 +4,37 @@ import numpy as np
 
 class Disk():
     DISK_BLOCK_SIZE = 16 # change to any size but make sure it is the right increment
+    disk = []
 
-    def __init__(self, disk_name, nblocks):
+    def __init__(self, disk_name, nblocks = 16):
         self.disk_name = disk_name
         self.nblocks = nblocks
         self.disk = np.zeros(shape=(nblocks, Disk.DISK_BLOCK_SIZE), dtype='int8')
 
-        with open(self.disk_name, 'wb') as d:
-            d.write(self.disk)
+        with open(disk_name, 'wb') as d:
+                d.write(self.disk)
 
-    # wait for file system
-    # this refers to files being written and read by the filesystem
-    def disk_open(self, filename):
-        pass
+    @classmethod
+    def disk_open(cls, disk_name):
+        try:
+            with open(disk_name, 'rb') as d:
+                byte_list = []
+                while True:
+                    byte = d.read(1)
+                    if not byte:
+                        break
+                    byte_list.append(byte)
+
+                nblocks = len(byte_list)/Disk.DISK_BLOCK_SIZE
+                ndisk = Disk(disk_name, int(nblocks))
+                for i in range(ndisk.nblocks):
+                    block = ndisk.disk_read(i)
+                    ndisk.disk[i] = block
+
+            return ndisk
+
+        except FileExistsError:
+            print("Disk does not exist.")
 
     def disk_size(self):
         return self.nblocks
@@ -49,12 +67,11 @@ class Disk():
         else:
             data = bytearray(data)
 
-        with open(self.disk_name, 'r+b') as d:
+        with open(self.disk_name, 'wb') as d:
             self.disk[blocknum] = data
             d.write(self.disk)
 
-    # wait for file system
-    # this refers to files being written and read by the filesystem
+    @classmethod
     def disk_close(self):
         pass
 

@@ -19,10 +19,9 @@ def command_parse(command):
     global mydisk
 
     try:
-        if clist[0] == 'select_disk':
+        if clist[0] == 'disk_open':
             disk_name = clist[1]
-            nblocks = int(clist[2])
-            mydisk = Disk(disk_name, nblocks) 
+            mydisk = Disk.disk_open(disk_name) 
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
@@ -49,7 +48,7 @@ def command_parse(command):
 def usage():
     # file = open_file('diskpy.py')
     print('\nCommands:')
-    print('\tselect_disk <disk name> <nbr of blocks>')
+    print('\tdisk_open <disk file path>')
     print('\tdisk_read <block number>')
     print('\tdisk_write <block number> <data to write>')
     print('\tdisk_size')
@@ -59,6 +58,9 @@ def usage():
 
 if __name__ == '__main__':
     command = ''
-    while command != 'exit':
+    while True:
+        usage()
         command = input('sfs > ')
+        if command != 'exit':
+            break
         command_parse(command)
