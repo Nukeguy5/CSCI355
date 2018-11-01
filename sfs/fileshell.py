@@ -1,29 +1,63 @@
 
-import click
-import sfs
+from diskpy import Disk
+import time
 
-@click.command()
-def help():
-    click.echo("\nCommands are:")
-    click.echo("\tformat")
-    click.echo("\tmount")
-    click.echo("\tdebug")
-    click.echo("\tcreate")
-    click.echo("")
+mydisk = None
 
-@click.command()
-def format():
-    sfs.fs_format()
+def read_script(filename):
+    with open(filename, 'r') as f:
+        commands = f.readlines()
+
+    for command in commands:
+        command_parse(command)
+        time.sleep(.5)
+
+def command_parse(command):
+    command = command.strip()
+    clist = command.split(" ")
+    global mydisk
+
+    if clist[0] == 'select_disk':
+        disk_name = clist[1]
+        nblocks = int(clist[2])
+        mydisk = Disk(disk_name, nblocks) 
+    
+    # elif mydisk == None:
+    #     raise Exception('No disk selected.')
+
+    elif clist[0] == 'disk_read':
+        blocknum = int(clist[1])
+        print(mydisk.disk_read(blocknum))
+
+    elif clist[0] == 'disk_write':
+        blocknum = int(clist[1])
+        data = ''.join(clist[2:]) 
+        print("Writing", data, "to disk...") 
+
+    elif clist[0] == 'disk_size':
+        size = mydisk.disk_size()
+        print(size)
+    
+    # elif clist[0] == 'read_script':
+    #     read_script(clist[1])
+
+    else:
+        raise Exception("Command not found...")
 
 
-@click.command()
-def mount():
-    sfs.fs_format()
+def usage():
+    # file = open_file('diskpy.py')
+    print('\nCommands:')
+    print('\tselect_disk')
+    print('\tdisk_read')
+    print('\tdisk_write')
+    print('\tdisk_size')
+    # print('\t./ (read script)')
+    print('\texit')
 
-@click.command()
-def debug():
-    sfs.fs_debug()
 
-@click.command()
-def create():
-    sfs.fs_create()
+if __name__ == '__main__':
+    command = ''
+    while command != 'exit':
+        command = input('sfs> ')
+        command_parse(command)
