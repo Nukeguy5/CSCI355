@@ -22,21 +22,22 @@ def command_parse(command):
     try:
         if clist[0] == 'disk_open':
             filepath = ' '.join(clist[1:])
+            print('\t' + 'Opening ' + filepath + ' ...')
             mydisk = Disk.disk_open(filepath)
 
         elif clist[0] == 'disk_create':
             disk_name = clist[1]
-            nblocks = clist[2]
+            nblocks = int(clist[2])
             mydisk = Disk(disk_name, nblocks)
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
-            print(mydisk.disk_read(blocknum))
+            print('\t', mydisk.disk_read(blocknum))
 
         elif clist[0] == 'disk_write':
             blocknum = int(clist[1])
             data = ' '.join(clist[2:]) 
-            print("Writing [", data, "] to disk...") 
+            print("\tWriting '" + str(data) + "' to disk...") 
             mydisk.disk_write(blocknum, data)
 
         elif clist[0] == 'disk_size':
@@ -52,10 +53,10 @@ def command_parse(command):
             read_script(filepath)
 
         else:
-            raise Exception("Command not found...")
+            print("\t '" + command + "' is not a command...")
     
-    except AttributeError:
-        print("No disk selected...")
+    except (AttributeError, IndexError):
+        print('\tDisk not selected or invalid syntax...')
 
 def usage():
     print('\nCommands:')

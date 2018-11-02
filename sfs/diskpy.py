@@ -18,17 +18,19 @@ class Disk():
     def disk_open(cls, disk_name):
         try:
             with open(disk_name, 'rb') as d:
-                byte_list = []
+                data_list = []
                 while True:
                     byte = d.read(1)
                     if not byte:
                         break
-                    byte_list.append(byte)
+                    data_list.append(int.from_bytes(byte, byteorder='big'))
 
-                nblocks = len(byte_list)/Disk.DISK_BLOCK_SIZE
+                nblocks = len(data_list)/Disk.DISK_BLOCK_SIZE
                 ndisk = Disk(disk_name, int(nblocks))
                 for i in range(ndisk.nblocks):
-                    block = ndisk.disk_read(i)
+                    start_addr = i*Disk.DISK_BLOCK_SIZE
+                    end_addr = start_addr + Disk.DISK_BLOCK_SIZE
+                    block = data_list[start_addr:end_addr]
                     ndisk.disk[i] = block
 
             return ndisk
