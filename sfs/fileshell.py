@@ -42,9 +42,10 @@ def command_parse(command):
         elif clist[0] == 'disk_size':
             size = mydisk.disk_size()
             total_bytes = size*Disk.DISK_BLOCK_SIZE
-            print('Disk:', mydisk.disk_name)
-            print('Blocks:', size)
-            print('Bytes:', total_bytes)
+            print('\nDisk:', mydisk.disk_name)
+            print('\tBlocks:', size)
+            print('\tBytes:', total_bytes)
+            print()
         
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
@@ -57,7 +58,6 @@ def command_parse(command):
         print("No disk selected...")
 
 def usage():
-    # file = open_file('diskpy.py')
     print('\nCommands:')
     print('\tdisk_create <new disk name> <number of blocks>')
     print('\tdisk_open <disk file path>')
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     command = ''
     usage()
     while True:
-        command = input('sfs > ')
+        command = input('sfs> ')
         if command == 'exit':
             break
         command_parse(command)
