@@ -19,14 +19,19 @@ class Disk():
         try:
             with open(disk_name, 'rb') as d:
                 data_list = []
+
+                # Read all bytes into one converted data list
                 while True:
                     byte = d.read(1)
                     if not byte:
                         break
-                    data_list.append(int.from_bytes(byte, byteorder='big'))
+                    data_list.append(int.from_bytes(byte, byteorder='big'))  # Convert, then append
 
+                # Calculate how may blocks based on the size
                 nblocks = len(data_list)/Disk.DISK_BLOCK_SIZE
-                ndisk = Disk(disk_name, int(nblocks))
+                ndisk = Disk(disk_name, int(nblocks))  # Create the object instance to use functions
+
+                # Break up the one big data line to a list of blocks
                 for i in range(ndisk.nblocks):
                     start_addr = i*Disk.DISK_BLOCK_SIZE
                     end_addr = start_addr + Disk.DISK_BLOCK_SIZE
@@ -77,10 +82,12 @@ class Disk():
                 data_len = len(data)
                 block_size = Disk.DISK_BLOCK_SIZE
                 if data_len <= block_size:
-                    self.disk[blocknum][:data_len] = data
+                    self.disk[blocknum][:data_len] = data  # In case data is too short to fit
                     d.write(self.disk)
                     return
+
                 else:
+                    # Splice the data based on blocksize and send remaining data to the method again
                     data_remaining = data[block_size:data_len]
                     data = data[:block_size]
                     self.disk[blocknum] = data
@@ -91,7 +98,7 @@ class Disk():
             _write_to_nblocks(blocknum, data)
 
     @classmethod
-    def disk_close(self):
+    def disk_close(foobar):  # No freaking point to this since python does it in "with" statement
         pass
 
 
