@@ -1,16 +1,18 @@
 # import include.blocks
+import numpy as np
 
 class Disk:
 
-    BLOCK_SIZE = 8 # 4096
+    BLOCK_SIZE = 16 # 4096
 
 
     # a row is a block
     @classmethod
     def disk_init(cls, diskname, nbrOfBlocks=32):
-        blank_block = bytearray(Disk.BLOCK_SIZE)
+        blank_block = np.zeros(shape=(1, Disk.BLOCK_SIZE), dtype='int8')
         with open(diskname, 'rb+') as f:
-            [ f.write(blank_block) for _ in range(nbrOfBlocks) ]
+            for _ in range(nbrOfBlocks):
+                f.write(blank_block)
                 
     @classmethod
     def disk_open(cls, diskname):
@@ -20,14 +22,12 @@ class Disk:
     @classmethod
     def disk_read(cls, open_file, blockNumber):
         start_address = Disk.BLOCK_SIZE * blockNumber
-        byte_array, block_data = [], []
+        block_data = np.empty(shape=(1, Disk.BLOCK_SIZE), dtype='int8')
 
         open_file.seek(start_address)
-        for _ in range(Disk.BLOCK_SIZE):
-            byte_array.append(open_file.read(1))
-
-        for item in byte_array:
-            block_data.append(int.from_bytes(item, 'little'))
+        for i in range(Disk.BLOCK_SIZE):
+             byte = open_file.read(1)
+             block_data[0,i] = int.from_bytes(byte, 'little')
 
         return block_data
 
@@ -35,15 +35,7 @@ class Disk:
     def disk_write(cls, open_file, blockNumber, data): 
         start_address = Disk.BLOCK_SIZE * blockNumber
         open_file.seek(start_address)
-
-        byte_data = bytearray(data)
-        num_blocks = int(len(byte_data) / Disk.BLOCK_SIZE)
-
-        # Write full blocks to the disk
-        # for i in range(num_blocks):
-        #     open_file.write(byte_data[Disk.BLOCK_SIZE * i : Disk.BLOCK_SIZE * (i+1)])
-
-        # Write any left over blocks
+        byte_data = bytearray(data)       
         open_file.write(byte_data[:])
 
     @classmethod
@@ -60,12 +52,12 @@ barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 # print(disk1.disk_read(3))
 
 
-Disk.disk_init('disk1.bin', 50)
-open_file = Disk.disk_open('disk1.bin')
-print(Disk.disk_read(open_file, 30))
-Disk.disk_write(open_file, 30, barr)
-print(Disk.disk_read(open_file, 30))
-print(Disk.disk_read(open_file, 31))
-print(Disk.disk_read(open_file, 32))
-print(Disk.disk_read(open_file, 33))
-Disk.disk_close(open_file)
+# Disk.disk_init('disk1.bin', 50)
+# open_file = Disk.disk_open('disk1.bin')
+# print(Disk.disk_read(open_file, 30))
+# Disk.disk_write(open_file, 30, barr)
+# print(Disk.disk_read(open_file, 30))
+# print(Disk.disk_read(open_file, 31))
+# print(Disk.disk_read(open_file, 32))
+# print(Disk.disk_read(open_file, 33))
+# Disk.disk_close(open_file)
