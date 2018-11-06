@@ -2,7 +2,7 @@
 
 class Disk:
 
-    BLOCK_SIZE = 4 # 4096
+    BLOCK_SIZE = 8 # 4096
 
 
     # a row is a block
@@ -40,11 +40,11 @@ class Disk:
         num_blocks = int(len(byte_data) / Disk.BLOCK_SIZE)
 
         # Write full blocks to the disk
-        for i in range(num_blocks):
-            open_file.write(byte_data[Disk.BLOCK_SIZE * i : Disk.BLOCK_SIZE * (i+1)])
+        # for i in range(num_blocks):
+        #     open_file.write(byte_data[Disk.BLOCK_SIZE * i : Disk.BLOCK_SIZE * (i+1)])
 
         # Write any left over blocks
-        open_file.write(byte_data[Disk.BLOCK_SIZE * (num_blocks - 1):])
+        open_file.write(byte_data[:])
 
     @classmethod
     def disk_status(cls, ):
