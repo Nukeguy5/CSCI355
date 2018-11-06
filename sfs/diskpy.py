@@ -25,7 +25,7 @@ class Disk():
                     byte = d.read(1)
                     if not byte:
                         break
-                    data_list.append(int.from_bytes(byte, byteorder='big'))  # Convert, then append
+                    data_list.append(int.from_bytes(byte, byteorder='little'))  # Convert, then append
 
                 # Calculate how may blocks based on the size
                 nblocks = len(data_list)/Disk.DISK_BLOCK_SIZE
@@ -38,7 +38,7 @@ class Disk():
                     block = data_list[start_addr:end_addr]
                     ndisk.disk[i] = block
 
-            return ndisk
+            return ndisk  # Return the class instance
 
         except FileExistsError:
             print("Disk does not exist.")
@@ -51,14 +51,14 @@ class Disk():
         
         start_addr = blocknum*Disk.DISK_BLOCK_SIZE
         block_size = Disk.DISK_BLOCK_SIZE
-        block_data = []  # List of binary data
+        block_data = np.zeros(shape=(1, block_size), dtype='int8')  # List of binary data
 
         with open(self.disk_name, 'rb') as d:
             d.seek(start_addr)  # Start reading from this address
-            for _ in range(block_size):
+            for i in range(block_size):
                 byte = d.read(1)  # Read one byte of data at a time
-                data = int.from_bytes(byte, byteorder='big')
-                block_data.append(data)
+                data = int.from_bytes(byte, byteorder='little')
+                block_data[0, i] = data
 
         # # Convert from list of bytes to list of ints
         # block_data = list(map(lambda x: int.from_bytes(x, byteorder='little'), block_raw))
