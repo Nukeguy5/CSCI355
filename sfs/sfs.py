@@ -1,33 +1,34 @@
 
 from diskpy import Disk
 import numpy as np
-from threading import Lock
+import blocks
 
-disk1 = Disk('disk1.bin', 16)
-fs_bitmap = np.zeros(shape=(disk1.disk_size(), 1), dtype='int32')
+# Disk.disk_init('disk1.bin', 16)
+# fs_bitmap = np.zeros(shape=(Disk.nbrOfBlocks, 1), dtype='int32')
 file_table = {}
-fs_lock = Lock()
 
-def fs_format():
-    print("Formatting...")
-    with fs_lock:
-        for i in range(len(fs_bitmap)):
-            fs_bitmap[i] = 0
-    print("Format Complete.")
+def fs_format(disk_name):
+    print("\tFormatting...")
+    mydisk = Disk.disk_open(disk_name)
+    sblock = Disk.disk_read(mydisk, 0)
+    nblocks = sblock[0, 1]
+    blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
+    ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
+    sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
+    iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
+
+    # Write initial blocks to array
+    blank_blocks[0] = sblock
+    for i in range(ninode_blocks):
+        i += 1  # don't overwrite superblock
+        blank_blocks[i] = iblock
+    
+    Disk.disk_write(mydisk, 0, blank_blocks)
+
+    print("\tFormat Complete.")
 
 def fs_debug():
-    print(' ------ Disk Mgmt -------')
-    for i in range(len(fs_bitmap)):
-        print(i, ':', fs_bitmap[i])
-    print(' _______ End Mgmt _______')
-    print()
-    print(' --------- Disk ---------')
-    nblocks = disk1.nblocks
-    for blocknum in range(nblocks):
-        block_data = disk1.disk_read(blocknum)
-        print(blocknum, ':', block_data)
-    print(' _______ End Disk _______')
-    print()
+    pass
 
 def fs_mount():
     pass
@@ -42,41 +43,13 @@ def fs_getsize(file):
     pass
 
 def fs_read(file, length, offset):
-    with fs_lock:
-        pass
+    pass
 
 def fs_write(file, data, length, offset):   
-    block_size = Disk.DISK_BLOCK_SIZE
-    blocks = []
-
-    def write_to_nblocks(data, offset):
-        data_length = len(data)
-        if data_length <= block_size:
-            disk1.disk_write(offset, data)
-            blocks.append(offset)
-            return  
-
-        data_remaining = data[block_size:data_length]
-        data = data[:block_size]
-        disk1.disk_write(offset, data)
-        blocks.append(offset)
-        offset += 1
-        return write_to_nblocks(data_remaining, offset) 
-    
-    # Check length of data to determine if needs to be written to more blocks
-    if len(data) > block_size:
-        write_to_nblocks(data, offset)
-    else:
-        disk1.disk_write(data, offset)
-        blocks.append(offset)
-
-    # Make note in bitmap and file table
-    for blocknum in blocks:
-        fs_bitmap[blocknum] = 1
-    file_table[file] = blocks
+    pass
 
 # Test
-fs_debug()
-string = 'testing this out.'
-fs_write('test.bla', string, len(string), 1)
-fs_debug()
+# fs_debug()
+# string = 'testing this out.'
+# fs_write('test.bla', string, len(string), 1)
+# fs_debug()

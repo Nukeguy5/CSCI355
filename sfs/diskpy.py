@@ -1,19 +1,28 @@
-# import include.blocks
+# import blocks
 import numpy as np
+import blocks
 
 class Disk:
 
     BLOCK_SIZE = 16 # 4096
 
-
     # a row is a block
     @classmethod
-    def disk_init(cls, diskname, nbrOfBlocks=32):
-        blank_block = np.zeros(shape=(1, Disk.BLOCK_SIZE), dtype='int8')
-        with open(diskname, 'rb+') as f:
-            for _ in range(nbrOfBlocks):
-                f.write(blank_block)
-                
+    def disk_init(cls, diskname, nblocks=32):
+        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
+        ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
+        sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
+        iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
+
+        # Write initial blocks to array
+        blank_blocks[0] = sblock
+        for i in range(ninode_blocks):
+            i += 1  # don't overwrite superblock
+            blank_blocks[i] = iblock
+
+        with open(diskname, 'wb') as f:
+            f.write(blank_blocks)
+            
     @classmethod
     def disk_open(cls, diskname):
         fl = open(diskname, 'rb+')
@@ -47,9 +56,9 @@ class Disk:
         open_file.close()
 
 # disk1 = Disk('qdisk.bin', 6)
-barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-# disk1.disk_write(3, barr)
-# print(disk1.disk_read(3))
+# barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+# # disk1.disk_write(3, barr)
+# # print(disk1.disk_read(3))
 
 
 # Disk.disk_init('disk1.bin', 50)
