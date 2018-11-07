@@ -1,113 +1,72 @@
-
+# import blocks
 import numpy as np
-# from threading import Lock
+import blocks
 
-class Disk():
-    DISK_BLOCK_SIZE = 16 # change to any size but make sure it is the right increment
-    disk = []
+class Disk:
 
-    def __init__(self, disk_name, nblocks = 16):
-        self.disk_name = disk_name
-        self.nblocks = nblocks
-        self.disk = np.zeros(shape=(nblocks, Disk.DISK_BLOCK_SIZE), dtype='int8')
+    BLOCK_SIZE = 16 # 4096
 
-        with open(disk_name, 'wb') as d:
-                d.write(self.disk)
+    # a row is a block
+    @classmethod
+    def disk_init(cls, diskname, nblocks=32):
+        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
+        ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
+        sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
+        iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
+
+        # Write initial blocks to array
+        blank_blocks[0] = sblock
+        for i in range(ninode_blocks):
+            i += 1  # don't overwrite superblock
+            blank_blocks[i] = iblock
+
+        with open(diskname, 'wb') as f:
+            f.write(blank_blocks)
+            
+    @classmethod
+    def disk_open(cls, diskname):
+        fl = open(diskname, 'rb+')
+        return fl
 
     @classmethod
-    def disk_open(cls, disk_name):
-        try:
-            with open(disk_name, 'rb') as d:
-                data_list = []
+    def disk_read(cls, open_file, blockNumber):
+        start_address = Disk.BLOCK_SIZE * blockNumber
+        block_data = np.empty(shape=(1, Disk.BLOCK_SIZE), dtype='int8')
 
-                # Read all bytes into one converted data list
-                while True:
-                    byte = d.read(1)
-                    if not byte:
-                        break
-                    data_list.append(int.from_bytes(byte, byteorder='big'))  # Convert, then append
+        open_file.seek(start_address)
+        for i in range(Disk.BLOCK_SIZE):
+             byte = open_file.read(1)
+             block_data[0,i] = int.from_bytes(byte, 'little')
 
-                # Calculate how may blocks based on the size
-                nblocks = len(data_list)/Disk.DISK_BLOCK_SIZE
-                ndisk = Disk(disk_name, int(nblocks))  # Create the object instance to use functions
-
-                # Break up the one big data line to a list of blocks
-                for i in range(ndisk.nblocks):
-                    start_addr = i*Disk.DISK_BLOCK_SIZE
-                    end_addr = start_addr + Disk.DISK_BLOCK_SIZE
-                    block = data_list[start_addr:end_addr]
-                    ndisk.disk[i] = block
-
-            return ndisk
-
-        except FileExistsError:
-            print("Disk does not exist.")
-
-    def disk_size(self):
-        return self.nblocks
-    
-    def disk_read(self, blocknum):
-        assert(blocknum <= self.nblocks), "ERROR: Blocknum {} is too large.".format(blocknum)
-        
-        start_addr = blocknum*Disk.DISK_BLOCK_SIZE
-        block_size = Disk.DISK_BLOCK_SIZE
-        block_data = []  # List of binary data
-
-        with open(self.disk_name, 'rb') as d:
-            d.seek(start_addr)  # Start reading from this address
-            for _ in range(block_size):
-                byte = d.read(1)  # Read one byte of data at a time
-                data = int.from_bytes(byte, byteorder='big')
-                block_data.append(data)
-
-        # # Convert from list of bytes to list of ints
-        # block_data = list(map(lambda x: int.from_bytes(x, byteorder='little'), block_raw))
         return block_data
-    
-    def disk_write(self, blocknum, data):
-        # Check length of data in the filesystem
-        assert(blocknum <= self.nblocks), "ERROR: blocknum {} is too big".format(blocknum)
-
-        # Check the data type to determine how to convert to binary
-        if type(data) == str:
-            data = bytearray(data, 'utf8')
-        else:
-            data = bytearray(data)
-
-        with open(self.disk_name, 'r+b') as d:
-
-            # Check data length to fit in block
-            def _write_to_nblocks(blocknum, data):
-                d.seek(0)
-                data_len = len(data)
-                block_size = Disk.DISK_BLOCK_SIZE
-                if data_len <= block_size:
-                    self.disk[blocknum][:data_len] = data  # In case data is too short to fit
-                    d.write(self.disk)
-                    return
-
-                else:
-                    # Splice the data based on blocksize and send remaining data to the method again
-                    data_remaining = data[block_size:data_len]
-                    data = data[:block_size]
-                    self.disk[blocknum] = data
-                    d.write(self.disk)
-                    blocknum += 1
-                    return _write_to_nblocks(blocknum, data_remaining)
-
-            _write_to_nblocks(blocknum, data)
 
     @classmethod
-    def disk_close(foobar):  # No freaking point to this since python does it in "with" statement
-        pass
+    def disk_write(cls, open_file, blockNumber, data): 
+        start_address = Disk.BLOCK_SIZE * blockNumber
+        open_file.seek(start_address)
+        byte_data = bytearray(data)       
+        open_file.write(byte_data[:])
+
+    @classmethod
+    def disk_status(cls, ):
+        print('The disk is doing GREAT!!')
+
+    @classmethod
+    def disk_close(cls, open_file):
+        open_file.close()
+
+# disk1 = Disk('qdisk.bin', 6)
+# barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+# # disk1.disk_write(3, barr)
+# # print(disk1.disk_read(3))
 
 
-class SuperBlock():
-    magicnum = 0
-    nblocks = 0
-    ninodeblocks = 0
-    ninodes = 0
-
-class Inode():
-    pass
-
+# Disk.disk_init('disk1.bin', 50)
+# open_file = Disk.disk_open('disk1.bin')
+# print(Disk.disk_read(open_file, 30))
+# Disk.disk_write(open_file, 30, barr)
+# print(Disk.disk_read(open_file, 30))
+# print(Disk.disk_read(open_file, 31))
+# print(Disk.disk_read(open_file, 32))
+# print(Disk.disk_read(open_file, 33))
+# Disk.disk_close(open_file)
