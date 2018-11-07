@@ -5,13 +5,14 @@ import blocks
 class Disk:
 
     BLOCK_SIZE = 16 # 4096
-    byte_order = 'little'
-    data_type = 'int8'
+    BYTEORDER = 'little'
+    ENCODING = 'utf8'
+    CELLSIZE = 'int8'
 
     # a row is a block
     @classmethod
     def disk_init(cls, diskname, nblocks=32):
-        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype=Disk.data_type)
+        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
         ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
         sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
         iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
@@ -33,12 +34,12 @@ class Disk:
     @classmethod
     def disk_read(cls, open_file, blockNumber):
         start_address = Disk.BLOCK_SIZE * blockNumber
-        block_data = np.empty(shape=(1, Disk.BLOCK_SIZE), dtype=Disk.data_type)
+        block_data = np.empty(shape=(1, Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
 
         open_file.seek(start_address)
         for i in range(Disk.BLOCK_SIZE):
              byte = open_file.read(1)
-             block_data[0,i] = int.from_bytes(byte, Disk.byte_order)
+             block_data[0,i] = int.from_bytes(byte, Disk.BYTEORDER)
 
         return block_data
 
@@ -49,7 +50,7 @@ class Disk:
         
         # Check the data type to determine how to convert to binary
         if type(data) == str:
-            byte_data = bytearray(data, 'utf8')
+            byte_data = bytearray(data, Disk.ENCODING)
         else:
             byte_data = bytearray(data)
                   
