@@ -1,23 +1,24 @@
 
 import numpy as np
 
-CELLSIZE = 'int8'
+CELLSIZE = 'int32'
 
 class Superblock:
-
+    
     @classmethod
-    def make_block(cls, block_size, nblocks=5, ninodeblocks=4, ninodes=2):
-        arr = np.zeros(shape=(block_size), dtype=CELLSIZE)
-        arr[0] = 111
-        arr[1] = nblocks
-        arr[2] = ninodeblocks
-        arr[3] = ninodes
-        return bytearray(arr)
+    def make_block(cls, block_size, nblocks=5, ninodeblocks=4, ninodes=32):
+        arr = np.zeros(shape=(1, block_size), dtype=CELLSIZE)
+        arr[0, 0] = 123456
+        arr[0, 1] = nblocks
+        arr[0, 2] = ninodeblocks
+        arr[0, 3] = ninodes
+        arr[0, 4] = 0  # points to the directory inode
+        return arr
 
 
 class Inode:
 
-    size = 8 # logical size of inode data in bytes
+    size = 32 # logical size of inode data in bytes
 
     # TODO: Figure out the size of an inode so that I can figure out how many I can fit in an inodeblock
 
@@ -26,7 +27,7 @@ class Inode:
     def make_inode(cls, is_valid=False, direct_blocks=[0]*5, indirect_loc=0):
         arr = np.zeros(shape=(Inode.size), dtype=CELLSIZE)
         arr[0] = is_valid
-        arr[1] = Inode.size
+        arr[1] = Inode.size  # find out what this is supposed to be
         index = 0
         for i in range(2, len(direct_blocks)):
             arr[i] = direct_blocks[index]
@@ -48,7 +49,7 @@ class InodeBlock:
             for item in inode:
                 merged_inodes[index] = item
                 index += 1
-        return bytearray(merged_inodes)
+        return merged_inodes
 
 
 class IndirectBlock:

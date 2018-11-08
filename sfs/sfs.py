@@ -23,7 +23,7 @@ def fs_format(disk_name):
         i += 1  # don't overwrite superblock
         blank_blocks[i] = iblock
     
-    Disk.disk_write(mydisk, 0, blank_blocks)
+    Disk.disk_write(mydisk, 0, bytearray(blank_blocks))
 
     print("\tFormat Complete.")
 

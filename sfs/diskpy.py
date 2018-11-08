@@ -4,14 +4,14 @@ import blocks
 
 class Disk:
 
-    BLOCK_SIZE = 16 # 4096
+    BLOCK_SIZE = 512 # 4096
     BYTEORDER = 'little'
     ENCODING = 'utf8'
-    CELLSIZE = 'int8'
+    CELLSIZE = 'int32'
 
     # a row is a block
     @classmethod
-    def disk_init(cls, diskname, nblocks=32):
+    def disk_init(cls, diskname, nblocks=64):
         blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
         ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
         sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
@@ -24,7 +24,7 @@ class Disk:
             blank_blocks[i] = iblock
 
         with open(diskname, 'wb') as f:
-            f.write(blank_blocks)
+            f.write(bytearray(blank_blocks))
             
     @classmethod
     def disk_open(cls, diskname):
@@ -65,17 +65,17 @@ class Disk:
         open_file.close()
 
 # disk1 = Disk('qdisk.bin', 6)
-# barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 # # disk1.disk_write(3, barr)
 # # print(disk1.disk_read(3))
 
 
-# Disk.disk_init('disk1.bin', 50)
-# open_file = Disk.disk_open('disk1.bin')
-# print(Disk.disk_read(open_file, 30))
-# Disk.disk_write(open_file, 30, barr)
-# print(Disk.disk_read(open_file, 30))
-# print(Disk.disk_read(open_file, 31))
-# print(Disk.disk_read(open_file, 32))
-# print(Disk.disk_read(open_file, 33))
-# Disk.disk_close(open_file)
+Disk.disk_init('disk1.bin')
+open_file = Disk.disk_open('disk1.bin')
+print(Disk.disk_read(open_file, 30))
+Disk.disk_write(open_file, 30, barr)
+print(Disk.disk_read(open_file, 30))
+print(Disk.disk_read(open_file, 31))
+print(Disk.disk_read(open_file, 32))
+print(Disk.disk_read(open_file, 33))
+Disk.disk_close(open_file)
