@@ -7,20 +7,18 @@ class Superblock:
     
     @classmethod
     def make_block(cls, block_size, nblocks=5, ninodeblocks=4, ninodes=32):
-        arr = np.zeros(shape=(1, block_size), dtype=CELLSIZE)
-        arr[0, 0] = 123456
-        arr[0, 1] = nblocks
-        arr[0, 2] = ninodeblocks
-        arr[0, 3] = ninodes
-        arr[0, 4] = 0  # points to the directory inode
+        arr = np.zeros(shape=(block_size), dtype=CELLSIZE)
+        arr[0] = 123456
+        arr[1] = nblocks
+        arr[2] = ninodeblocks
+        arr[3] = ninodes
+        arr[4] = 0  # points to the directory inode
         return arr
 
 
 class Inode:
 
     size = 32 # logical size of inode data in bytes
-
-    # TODO: Figure out the size of an inode so that I can figure out how many I can fit in an inodeblock
 
     # returns a bytearray
     @classmethod

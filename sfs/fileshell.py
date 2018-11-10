@@ -12,6 +12,8 @@ def read_script(filename):
 
     for command in commands:
         command.replace('\n', '')
+        if command[1] == '#':
+            continue
         command_parse(command)
         time.sleep(.5)
 
@@ -59,7 +61,7 @@ def command_parse(command):
 
         elif clist[0] == 'fs_format':
             filepath = ' '.join(clist[1:])
-            chk = input('Are you sure you would like to format the disk? (y/n)')
+            chk = input('Are you sure you would like to format the disk? (y/n) ')
             chk = chk.lower()
             if chk == 'y':
                 sfs.fs_format(filepath)
