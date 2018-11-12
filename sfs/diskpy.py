@@ -82,7 +82,7 @@ class Disk:
 # # # print(disk1.disk_read(3))
 
 
-Disk.disk_init('disk1.bin')
+# Disk.disk_init('disk1.bin')
 # open_file = Disk.disk_open('disk1.bin')
 # print(Disk.disk_read(open_file, 30))
 # Disk.disk_write(open_file, 30, barr)
