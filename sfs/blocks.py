@@ -43,7 +43,7 @@ class InodeBlock:
     # consists of 128 Inodes
     @classmethod
     def make_block(cls, block_size):
-        num_inodes = int( block_size / Inode.size)
+        num_inodes = block_size//Inode.size
         merged_inodes = np.zeros(shape=(block_size), dtype=CELLSIZE)
         inode = Inode.make_inode()
         index = 0
