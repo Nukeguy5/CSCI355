@@ -6,13 +6,17 @@ CELLSIZE = 'int32'
 class Superblock:
     
     @classmethod
-    def make_block(cls, block_size, nblocks=5, ninodeblocks=4, ninodes=32):
+    def make_block(cls, block_size, nblocks=64, ninodeblocks=6, ninodes=32, dentry=0, dataBlock_bitmap=1, inode_bitmap=2, dataBlock_start=9, inodeBlock_start=3):
         arr = np.zeros(shape=(block_size), dtype=CELLSIZE)
         arr[0] = 123456
         arr[1] = nblocks
         arr[2] = ninodeblocks
         arr[3] = ninodes
-        arr[4] = 0  # points to the directory inode
+        arr[4] = dentry  # points to the directory inode
+        arr[5] = dataBlock_bitmap
+        arr[6] = inode_bitmap
+        arr[7] = dataBlock_start
+        arr[8] = inodeBlock_start
         return arr
 
 

@@ -17,11 +17,11 @@ class BlockBitMap:
 
         # Mark correct blocks as FREE
         for i in range(nblocks):
-            self.blockBitMap[i] = BlockBitMap.FREE
+            self.blockBitMap[i, 0] = BlockBitMap.FREE
         
         # Mark blocks over the number of blocks as BAD
         for i in range(nblocks, self.arraysize):
-            self.blockBitMap[i] = BlockBitMap.BAD
+            self.blockBitMap[i, 0] = BlockBitMap.BAD
     
     def setFree(self, offset):
         self.blockBitMap[offset] = BlockBitMap.FREE

@@ -10,20 +10,29 @@ from blockbitmap import BlockBitMap
 def fs_format(disk_name):
     print("\tFormatting...")
 
-    # Read Super Block
+    # Read Super Block into buffer
     mydisk = Disk.disk_open(disk_name)
     sblock = Disk.disk_read(mydisk, 0)
-    nblocks, ninode_blocks, ninodes = sblock[1], sblock[2], sblock[3]
-    ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
+
+    # Super Block Info
+    nblocks = sblock[1]
+    ninode_blocks = sblock[2] 
+    ninodes = sblock[3]
+    dentry = 0
+    dataBitmap_block = 1
+    inodeBitmap_block = 2
+    dataBlock_start = 3 + ninode_blocks
+    inodeBlock_start = 3
 
     # Create buffer to write new data to disk
     blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
-    sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
+    sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks, ninodes, dentry, dataBitmap_block, inodeBitmap_block, dataBlock_start, inodeBlock_start)
     iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
     
     # Create and initialize bitmaps
-    data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
-    inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 2)
+    data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, dataBitmap_block)
+    inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, inodeBitmap_block)
+    ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
     data_bitmap.init(ndata_blocks)
     inode_bitmap.init(ninodes)
 
