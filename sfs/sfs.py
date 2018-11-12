@@ -36,7 +36,6 @@ def fs_format(disk_name):
     data_bitmap.init(ndata_blocks)
     inode_bitmap.init(ninodes)
 
-
     # Write initial blocks to array
     blank_blocks[0] = sblock
     blank_blocks[1] = data_bitmap.saveToDisk()
