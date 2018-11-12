@@ -4,9 +4,6 @@ import numpy as np
 import blocks
 from blockbitmap import BlockBitMap
 
-# Disk.disk_init('disk1.bin', 16)
-# fs_bitmap = np.zeros(shape=(Disk.nbrOfBlocks, 1), dtype='int32')
-
 def fs_format(disk_name):
     print("\tFormatting...")
 
@@ -37,7 +34,6 @@ def fs_format(disk_name):
     data_bitmap.init(ndata_blocks)
     inode_bitmap.init(ninodes)
     inode_bitmap.blockBitMap[0] = BlockBitMap.BAD  # set inode 0 to BAD
-
 
     # Write initial blocks to array
     blank_blocks[0] = sblock
@@ -72,10 +68,3 @@ def fs_read(file, length, offset):
 
 def fs_write(file, data, length, offset):   
     pass
-
-# Test
-# fs_debug()
-# string = 'testing this out.'
-# fs_write('test.bla', string, len(string), 1)
-# fs_debug()
-

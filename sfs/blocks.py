@@ -22,14 +22,14 @@ class Superblock:
 
 class Inode:
 
-    size = 32 # logical size of inode data in bytes
+    size = 128  # logical size of inode data in bytes
 
     # returns a bytearray
     @classmethod
     def make_inode(cls, is_valid=False, direct_blocks=[0]*5, indirect_loc=0):
         arr = np.zeros(shape=(Inode.size), dtype=CELLSIZE)
         arr[0] = is_valid
-        arr[1] = Inode.size  # find out what this is supposed to be
+        arr[1] = Inode.size
         index = 0
         for i in range(2, len(direct_blocks)):
             arr[i] = direct_blocks[index]

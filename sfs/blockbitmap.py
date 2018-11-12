@@ -17,17 +17,20 @@ class BlockBitMap:
 
         # Mark correct blocks as FREE
         for i in range(nblocks):
-            self.blockBitMap[i, 0] = BlockBitMap.FREE
+            self.setFree(i)
         
         # Mark blocks over the number of blocks as BAD
         for i in range(nblocks, self.arraysize):
-            self.blockBitMap[i, 0] = BlockBitMap.BAD
+            self.setBad(i)
     
     def setFree(self, offset):
-        self.blockBitMap[offset] = BlockBitMap.FREE
+        self.blockBitMap[offset, 0] = BlockBitMap.FREE
     
     def setUsed(self, offset):
-        self.blockBitMap[offset] = BlockBitMap.USED
+        self.blockBitMap[offset, 0] = BlockBitMap.USED
+
+    def setBad(self, offset):
+        self.blockBitMap[offset, 0] = BlockBitMap.BAD
 
     def findFree(self):
         free_blocks = []

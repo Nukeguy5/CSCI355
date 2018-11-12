@@ -33,7 +33,7 @@ class Disk:
         ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
         data_bitmap.init(ndata_blocks)
         inode_bitmap.init(ninodes)
-        inode_bitmap.blockBitMap[0] = BlockBitMap.BAD  # set inode 0 to BAD
+        inode_bitmap.setBad(0)  # set inode 0 to BAD
 
         # Write initial blocks to array
         blank_blocks[0] = sblock
