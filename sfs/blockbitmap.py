@@ -29,3 +29,18 @@ class BlockBitMap:
     def setUsed(self, offset):
         self.blockBitMap[offset] = BlockBitMap.USED
 
+    def findFree(self):
+        free_blocks = []
+        for i in range(self.arraysize):
+            status = self.blockBitMap[i]
+            if status == BlockBitMap.FREE:
+                free_blocks.append(i)
+            else:
+                continue
+        
+        return free_blocks
+
+    # TODO: Figure out if this is formatting and disk creation's job
+    def saveToDisk(self, disk):
+        # byte_data = bytearray(self.blockBitMap)
+        pass

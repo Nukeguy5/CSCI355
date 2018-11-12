@@ -9,17 +9,23 @@ from blockbitmap import BlockBitMap
 
 def fs_format(disk_name):
     print("\tFormatting...")
+
+    # Read Super Block
     mydisk = Disk.disk_open(disk_name)
     sblock = Disk.disk_read(mydisk, 0)
-    nblocks = sblock[1]
+    nblocks, ninode_blocks, ninodes = sblock[1], sblock[2], sblock[3]
+    ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
+
+    # Create buffer to write new data to disk
     blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
-    ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
     sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
     iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
     
-    # Initialize bitmaps
+    # Create and initialize bitmaps
     data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
     inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 2)
+    data_bitmap.init(ndata_blocks)
+    inode_bitmap.init(ninodes)
 
 
     # Write initial blocks to array
