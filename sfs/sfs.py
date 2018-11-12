@@ -30,8 +30,8 @@ def fs_format(disk_name):
 
     # Write initial blocks to array
     blank_blocks[0] = sblock
-    blank_blocks[1] = data_bitmap.blockBitMap
-    blank_blocks[2] = inode_bitmap.blockBitMap
+    blank_blocks[1] = data_bitmap.saveToDisk()
+    blank_blocks[2] = inode_bitmap.saveToDisk()
 
     for i in range(ninode_blocks):
         i += 3  # don't overwrite superblock or bitmaps

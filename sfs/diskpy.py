@@ -17,15 +17,20 @@ class Disk:
         ninode_blocks = int(nblocks/10)  # Make 10% of blocks inodes
         sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks)
         iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
+        ninodes = int(Disk.BLOCK_SIZE/blocks.Inode.size * ninode_blocks)
+        ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
 
         # Initialize bitmaps
         data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
         inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 2)
+        data_bitmap.init(ndata_blocks)
+        inode_bitmap.init(ninodes)
 
         # Write initial blocks to array
         blank_blocks[0] = sblock
-        blank_blocks[1] = data_bitmap.blockBitMap
-        blank_blocks[2] = inode_bitmap.blockBitMap
+        blank_blocks[1] = data_bitmap.saveToDisk()
+        blank_blocks[2] = inode_bitmap.saveToDisk()
+
         for i in range(ninode_blocks):
             i += 3  # don't overwrite superblock or bitmaps
             blank_blocks[i] = iblock
@@ -77,7 +82,7 @@ class Disk:
 # # # print(disk1.disk_read(3))
 
 
-# Disk.disk_init('disk1.bin')
+Disk.disk_init('disk1.bin')
 # open_file = Disk.disk_open('disk1.bin')
 # print(Disk.disk_read(open_file, 30))
 # Disk.disk_write(open_file, 30, barr)

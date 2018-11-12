@@ -36,7 +36,7 @@ def command_parse(command):
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
-            print('\t', Disk.disk_read(mydisk, blocknum))
+            print(Disk.disk_read(mydisk, blocknum))
 
         elif clist[0] == 'disk_write':
             blocknum = int(clist[1])

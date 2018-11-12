@@ -32,7 +32,7 @@ class BlockBitMap:
     def findFree(self):
         free_blocks = []
         for i in range(self.arraysize):
-            status = self.blockBitMap[i]
+            status = self.blockBitMap[i, 0]
             if status == BlockBitMap.FREE:
                 free_blocks.append(i)
             else:
@@ -41,6 +41,11 @@ class BlockBitMap:
         return free_blocks
 
     # TODO: Figure out if this is formatting and disk creation's job
-    def saveToDisk(self, disk):
-        # byte_data = bytearray(self.blockBitMap)
-        pass
+    def saveToDisk(self):
+        format_arr = np.zeros(shape=(self.arraysize), dtype='int8')
+        for i in range(self.arraysize):
+            status = self.blockBitMap[i, 0]
+            format_arr[i] = status
+        
+        return format_arr
+        
