@@ -57,10 +57,11 @@ class Disk:
 
     @classmethod
     def disk_read(cls, open_file, blockNumber):
-        start_address = Disk.BLOCK_SIZE * blockNumber
+        start_address = Disk.BLOCK_SIZE * blockNumber * 4  # Multiply by 4 to account for 4 byte cell size
         block_data = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
-
+        
         open_file.seek(start_address)
+
         for i in range(Disk.BLOCK_SIZE):
             #  byte_arr = open_file.read(4)
             byte = open_file.read(1)

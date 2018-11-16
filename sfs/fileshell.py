@@ -75,7 +75,9 @@ def command_parse(command):
             print("\t '" + command + "' is not a command...")
     
     except (AttributeError, IndexError):
-        print('\tDisk not selected or invalid syntax...')
+        usage()
+        print('\tNo Disk selected or Invalid syntax...\n')
+        return
 
 def usage():
     print('\nCommands:')
