@@ -52,20 +52,3 @@ class InodeBlock:
                 merged_inodes[index] = item
                 index += 1
         return merged_inodes
-
-
-class IndirectBlock:
-
-    # consists of 1024 4-byte pointers that point to data blocks
-    def __init__(self, ):
-        pass
-
-
-class DataBlock:
-    def __init__(self, ):
-        pass
-
-
-# print('Superblock: ', Superblock.make_block())
-# print('Inode: ', Inode.make_inode())
-# print('Inode Block: ', InodeBlock.make_block())

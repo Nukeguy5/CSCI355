@@ -3,7 +3,6 @@ from diskpy import Disk
 import sfs
 import time
 
-# disk1 = Disk('disk1.bin', 16)
 mydisk = None
 
 def read_script(filename):
@@ -12,7 +11,7 @@ def read_script(filename):
 
     for command in commands:
         command.replace('\n', '')
-        if command[1] == '#':
+        if command[0] == '#':
             continue
         command_parse(command)
         time.sleep(.5)

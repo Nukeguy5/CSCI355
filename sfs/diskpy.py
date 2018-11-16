@@ -2,6 +2,7 @@
 import numpy as np
 import blocks
 from blockbitmap import BlockBitMap
+# import struct
 
 class Disk:
 
@@ -18,14 +19,16 @@ class Disk:
         # Super Block Info
         ninode_blocks = nblocks//10  # Make 10% of blocks inodes
         inode_size = blocks.Inode.size
+        ninodes = Disk.BLOCK_SIZE//inode_size * ninode_blocks
         dentry = 0
         dataBitmap_block = 1
         inodeBitmap_block = 2
         dataBlock_start = 3 + ninode_blocks
         inodeBlock_start = 3
-        sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks, inode_size, dentry, dataBitmap_block, inodeBitmap_block, dataBlock_start, inodeBlock_start)
+
+        # Initialize super and inode blocks
+        sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks, ninodes, dentry, dataBitmap_block, inodeBitmap_block, dataBlock_start, inodeBlock_start)
         iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
-        ninodes = Disk.BLOCK_SIZE//inode_size * ninode_blocks
 
         # Initialize bitmaps
         data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
@@ -55,12 +58,14 @@ class Disk:
     @classmethod
     def disk_read(cls, open_file, blockNumber):
         start_address = Disk.BLOCK_SIZE * blockNumber
-        block_data = np.empty(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
+        block_data = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
 
         open_file.seek(start_address)
         for i in range(Disk.BLOCK_SIZE):
-             byte = open_file.read(1)
-             block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
+            #  byte_arr = open_file.read(4)
+            byte = open_file.read(1)
+            block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
+            #  block_data[i] = struct.unpack('i', byte_arr)[0]
 
         return block_data
 
