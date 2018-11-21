@@ -21,19 +21,18 @@ def fs_format(disk_name):
     dataBlock_start = 3 + ninode_blocks
     inodeBlock_start = 3
 
-    # TODO: Make more efficient to write empty data blocks to disk
     # Create buffer to write new data to disk
-    blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
+    blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
     sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks, ninodes, dentry, dataBitmap_block, inodeBitmap_block, dataBlock_start, inodeBlock_start)
     iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
     
-    # Create and initialize bitmaps
+    # Initialize bitmaps
     data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, dataBitmap_block)
     inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, inodeBitmap_block)
     ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
     data_bitmap.init(ndata_blocks)
     inode_bitmap.init(ninodes)
-    inode_bitmap.setBad(0)  # set inode 0 to BAD
+    inode_bitmap.setUsed(0)  # set inode 0 to USED
 
     # Write initial blocks to array
     blank_blocks[0] = sblock

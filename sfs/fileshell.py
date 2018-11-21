@@ -67,6 +67,16 @@ def command_parse(command):
             else:
                 print('\tFormat Canceled.')
 
+        # elif clist[0] == 'block_findfree':
+        #     if clist[1] == 'data':
+        #         free_space = mydisk.data_bitmap.findFree()
+        #     elif clist[1] == 'inode':
+        #         free_space = mydisk.inode_bitmap.findFree()
+        #     else:
+        #         print("\tInvalid Bitmap...")
+
+        #     print(free_space)
+
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
             read_script(filepath)
@@ -88,6 +98,7 @@ def usage():
     print('\tdisk_write <block number> <data to write>')
     # print('\tdisk_size')
     print('\tfs_format <disk file path>')
+    # print('\tblock_findfree <bitmap> ')
     print('\tread_script <script file path>')
     print('\texit')
     print()

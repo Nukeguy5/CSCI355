@@ -16,8 +16,8 @@ class BlockBitMap:
     def init(self, nblocks):
 
         # Mark correct blocks as FREE
-        for i in range(nblocks):
-            self.setFree(i)
+        # for i in range(nblocks):
+        #     self.setFree(i)
         
         # Mark blocks over the number of blocks as BAD
         for i in range(nblocks, self.arraysize):

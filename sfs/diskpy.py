@@ -2,7 +2,7 @@
 import numpy as np
 import blocks
 from blockbitmap import BlockBitMap
-# import struct
+import struct
 
 class Disk:
 
@@ -36,7 +36,7 @@ class Disk:
         ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
         data_bitmap.init(ndata_blocks)
         inode_bitmap.init(ninodes)
-        inode_bitmap.setBad(0)  # set inode 0 to BAD
+        inode_bitmap.setUsed(0)  # set inode 0 to BAD
 
         # Write initial blocks to array
         blank_blocks[0] = sblock
@@ -63,10 +63,10 @@ class Disk:
         open_file.seek(start_address)
 
         for i in range(Disk.BLOCK_SIZE):
-            #  byte_arr = open_file.read(4)
-            byte = open_file.read(1)
-            block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
-            #  block_data[i] = struct.unpack('i', byte_arr)[0]
+            byte_arr = open_file.read(4)
+            block_data[i] = struct.unpack('i', byte_arr)[0]
+            # byte = open_file.read(1)
+            # block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
 
         return block_data
 
@@ -80,7 +80,7 @@ class Disk:
             byte_data = bytearray(data, Disk.ENCODING)
         else:
             byte_data = bytearray(data)
-                  
+
         open_file.write(byte_data[:])
 
     @classmethod
@@ -91,18 +91,4 @@ class Disk:
     def disk_close(cls, open_file):
         open_file.close()
 
-# disk1 = Disk('qdisk.bin', 6)
-# barr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-# # # disk1.disk_write(3, barr)
-# # # print(disk1.disk_read(3))
-
-
 # Disk.disk_init('disk1.bin')
-# open_file = Disk.disk_open('disk1.bin')
-# print(Disk.disk_read(open_file, 30))
-# Disk.disk_write(open_file, 30, barr)
-# print(Disk.disk_read(open_file, 30))
-# print(Disk.disk_read(open_file, 31))
-# print(Disk.disk_read(open_file, 32))
-# print(Disk.disk_read(open_file, 33))
-# Disk.disk_close(open_file)
