@@ -70,15 +70,13 @@ def command_parse(command):
 
         elif clist[0] == 'fs_findfree':
             if clist[1] == 'data':
-                free_space = sfs.fs_findfree(mydisk, 1)
-
+                free_space_data = sfs.fs_findfree(mydisk, 1)
+                print(free_space_data)
             elif clist[1] == 'inode':
-                free_space = sfs.fs_findfree(mydisk, 2)                
-
+                free_space_inode = sfs.fs_findfree(mydisk, 2) 
+                print(free_space_inode)
             else:
                 print("\tInvalid Bitmap...")
-
-            print(free_space)
 
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
