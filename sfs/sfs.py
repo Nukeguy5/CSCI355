@@ -67,3 +67,14 @@ def fs_read(file, length, offset):
 
 def fs_write(file, data, length, offset):   
     pass
+
+def fs_findfree(open_file, blocknum):
+    bitmap = BlockBitMap(Disk.BLOCK_SIZE, blocknum)
+    disk_read = Disk.disk_read(open_file, blocknum)
+
+    for i in range(len(disk_read)):
+        bitmap.blockBitMap[i, 0] = disk_read[i]
+        
+    free_space = bitmap.findFree()
+    
+    return free_space

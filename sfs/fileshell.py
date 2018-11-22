@@ -1,5 +1,6 @@
 
 from diskpy import Disk
+from blockbitmap import BlockBitMap
 import sfs
 import time
 
@@ -67,22 +68,24 @@ def command_parse(command):
             else:
                 print('\tFormat Canceled.')
 
-        # elif clist[0] == 'block_findfree':
-        #     if clist[1] == 'data':
-        #         free_space = mydisk.data_bitmap.findFree()
-        #     elif clist[1] == 'inode':
-        #         free_space = mydisk.inode_bitmap.findFree()
-        #     else:
-        #         print("\tInvalid Bitmap...")
+        elif clist[0] == 'fs_findfree':
+            if clist[1] == 'data':
+                free_space = sfs.fs_findfree(mydisk, 1)
 
-        #     print(free_space)
+            elif clist[1] == 'inode':
+                free_space = sfs.fs_findfree(mydisk, 2)                
+
+            else:
+                print("\tInvalid Bitmap...")
+
+            print(free_space)
 
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
             read_script(filepath)
 
         else:
-            print("\t '" + command + "' is not a command...")
+            print("\t'" + command + "' is not a command...")
     
     except (AttributeError, IndexError):
         usage()
@@ -98,7 +101,7 @@ def usage():
     print('\tdisk_write <block number> <data to write>')
     # print('\tdisk_size')
     print('\tfs_format <disk file path>')
-    # print('\tblock_findfree <bitmap> ')
+    print('\tfs_findfree <bitmap> ')
     print('\tread_script <script file path>')
     print('\texit')
     print()
