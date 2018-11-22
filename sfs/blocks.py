@@ -22,7 +22,7 @@ class Superblock:
 
 class Inode:
 
-    size = 128  # logical size of inode data in bytes
+    size = 32  # logical size of inode data in bytes
 
     # returns a bytearray
     @classmethod
