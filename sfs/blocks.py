@@ -1,13 +1,13 @@
 
 import numpy as np
-
+from diskpy import Disk
 CELLSIZE = 'int32'
 
 class Superblock:
     
     @classmethod
-    def make_block(cls, block_size, nblocks=64, ninodeblocks=6, ninodes=32, dentry=0, dataBlock_bitmap=1, inode_bitmap=2, dataBlock_start=9, inodeBlock_start=3):
-        arr = np.zeros(shape=(block_size), dtype=CELLSIZE)
+    def make_block(cls, nblocks=64, ninodeblocks=6, ninodes=32, dentry=0, dataBlock_bitmap=1, inode_bitmap=2, dataBlock_start=9, inodeBlock_start=3):
+        arr = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=CELLSIZE)
         arr[0] = 123456
         arr[1] = nblocks
         arr[2] = ninodeblocks
@@ -23,10 +23,13 @@ class Superblock:
 class Inode:
 
     size = 32  # logical size of inode data in bytes
+    NOT_VALID = 0
+    FILE = 1
+    DIR = 2
 
     # returns a bytearray
     @classmethod
-    def make_inode(cls, is_valid=False, direct_blocks=[0]*5, indirect_loc=0):
+    def make_inode(cls, is_valid=NOT_VALID, direct_blocks=[0]*5, indirect_loc=0):
         arr = np.zeros(shape=(Inode.size), dtype=CELLSIZE)
         arr[0] = is_valid
         arr[1] = Inode.size
@@ -42,9 +45,9 @@ class InodeBlock:
     
     # consists of 128 Inodes
     @classmethod
-    def make_block(cls, block_size):
-        num_inodes = block_size//Inode.size
-        merged_inodes = np.zeros(shape=(block_size), dtype=CELLSIZE)
+    def make_block(cls):
+        num_inodes = Disk.BLOCK_SIZE//Inode.size
+        merged_inodes = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=CELLSIZE)
         inode = Inode.make_inode()
         index = 0
         for _ in range(num_inodes):

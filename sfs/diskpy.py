@@ -1,8 +1,8 @@
 
 import numpy as np
-import blocks
+# import blocks
 from blockbitmap import BlockBitMap
-import struct
+# import struct
 
 class Disk:
 
@@ -14,38 +14,7 @@ class Disk:
     # a row is a block
     @classmethod
     def disk_init(cls, diskname, nblocks=64):
-        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
-        
-        # Super Block Info
-        ninode_blocks = nblocks//10  # Make 10% of blocks inodes
-        inode_size = blocks.Inode.size
-        ninodes = Disk.BLOCK_SIZE//inode_size * ninode_blocks
-        dentry = 0
-        dataBitmap_block = 1
-        inodeBitmap_block = 2
-        dataBlock_start = 3 + ninode_blocks
-        inodeBlock_start = 3
-
-        # Initialize super and inode blocks
-        sblock = blocks.Superblock.make_block(Disk.BLOCK_SIZE, nblocks, ninode_blocks, ninodes, dentry, dataBitmap_block, inodeBitmap_block, dataBlock_start, inodeBlock_start)
-        iblock = blocks.InodeBlock.make_block(Disk.BLOCK_SIZE)
-
-        # Initialize bitmaps
-        data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
-        inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 2)
-        ndata_blocks = nblocks - ninode_blocks - 3  # don't count super block or bitmaps
-        data_bitmap.init(ndata_blocks)
-        inode_bitmap.init(ninodes)
-        inode_bitmap.setUsed(0)  # set inode 0 to BAD
-
-        # Write initial blocks to array
-        blank_blocks[0] = sblock
-        blank_blocks[1] = data_bitmap.saveToDisk()
-        blank_blocks[2] = inode_bitmap.saveToDisk()
-
-        for i in range(ninode_blocks):
-            i += 3  # don't overwrite superblock or bitmaps
-            blank_blocks[i] = iblock
+        blank_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE), dtype='int8')
 
         with open(diskname, 'wb') as f:
             f.write(bytearray(blank_blocks))
@@ -57,16 +26,16 @@ class Disk:
 
     @classmethod
     def disk_read(cls, open_file, blockNumber):
-        start_address = Disk.BLOCK_SIZE * blockNumber * 4  # Multiply by 4 to account for 4 byte cell size
+        start_address = Disk.BLOCK_SIZE * blockNumber
         block_data = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
         
         open_file.seek(start_address)
 
         for i in range(Disk.BLOCK_SIZE):
-            byte_arr = open_file.read(4)
-            block_data[i] = struct.unpack('i', byte_arr)[0]
-            # byte = open_file.read(1)
-            # block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
+            # byte_arr = open_file.read(4)
+            # block_data[i] = struct.unpack('i', byte_arr)[0]
+            byte = open_file.read(1)
+            block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
 
         return block_data
 
@@ -74,14 +43,25 @@ class Disk:
     def disk_write(cls, open_file, blockNumber, data): 
         start_address = Disk.BLOCK_SIZE * blockNumber
         open_file.seek(start_address)
-        
+
         # Check the data type to determine how to convert to binary
         if type(data) == str:
-            byte_data = bytearray(data, Disk.ENCODING)
+            data_arr = np.zeros(shape=len(data), dtype='int8')
+            for i in range(len(data)):
+                char_val = bytes(data[i], Disk.ENCODING)
+                data_arr[i] = int.from_bytes(char_val, Disk.BYTEORDER)
+            byte_data = bytearray(data_arr)
         else:
             byte_data = bytearray(data)
 
-        open_file.write(byte_data[:])
+        open_file.write(byte_data)
+
+    @classmethod
+    def disk_size(cls, open_file):
+        open_file.seek(0, 2)
+        size = open_file.tell()
+        
+        return size
 
     @classmethod
     def disk_status(cls, ):

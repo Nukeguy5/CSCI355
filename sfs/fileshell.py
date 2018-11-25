@@ -68,6 +68,12 @@ def command_parse(command):
             else:
                 print('\tFormat Canceled.')
 
+        elif clist[0] == 'fs_create':
+            filepath = ' '.join(clist[1:])
+            print('\tCreating File System...')
+            sfs.fs_create(mydisk)
+            print('\tFile System Created.')
+
         elif clist[0] == 'fs_findfree':
             if clist[1] == 'data':
                 free_space_data = sfs.fs_findfree(mydisk, 1)
@@ -99,7 +105,8 @@ def usage():
     print('\tdisk_write <block number> <data to write>')
     # print('\tdisk_size')
     print('\tfs_format <disk file path>')
-    print('\tfs_findfree <bitmap> ')
+    print('\tfs_create')
+    print('\tfs_findfree <bitmap>')
     print('\tread_script <script file path>')
     print('\texit')
     print()

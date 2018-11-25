@@ -11,31 +11,31 @@ class BlockBitMap:
     def __init__(self, arraysize, blockNumber):
         self.blockNumber = blockNumber
         self.arraysize = arraysize
-        self.blockBitMap = np.zeros(shape=(arraysize, 1), dtype='int8')
+        self.blockBitMap = np.zeros(shape=(arraysize), dtype='int8')
 
     def init(self, nblocks):
 
         # Mark correct blocks as FREE
-        # for i in range(nblocks):
-        #     self.setFree(i)
+        for i in range(nblocks):
+            self.setFree(i)
         
         # Mark blocks over the number of blocks as BAD
         for i in range(nblocks, self.arraysize):
             self.setBad(i)
     
     def setFree(self, offset):
-        self.blockBitMap[offset, 0] = BlockBitMap.FREE
+        self.blockBitMap[offset] = BlockBitMap.FREE
     
     def setUsed(self, offset):
-        self.blockBitMap[offset, 0] = BlockBitMap.USED
+        self.blockBitMap[offset] = BlockBitMap.USED
 
     def setBad(self, offset):
-        self.blockBitMap[offset, 0] = BlockBitMap.BAD
+        self.blockBitMap[offset] = BlockBitMap.BAD
 
     def findFree(self):
         free_blocks = []
         for i in range(self.arraysize):
-            status = self.blockBitMap[i, 0]
+            status = self.blockBitMap[i]
             if status == BlockBitMap.FREE:
                 free_blocks.append(i)
             else:
@@ -47,7 +47,7 @@ class BlockBitMap:
     def saveToDisk(self):
         format_arr = np.zeros(shape=(self.arraysize), dtype='int8')
         for i in range(self.arraysize):
-            status = self.blockBitMap[i, 0]
+            status = self.blockBitMap[i]
             format_arr[i] = status
         
         return format_arr
