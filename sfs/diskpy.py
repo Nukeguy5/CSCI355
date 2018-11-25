@@ -59,8 +59,7 @@ class Disk:
     @classmethod
     def disk_size(cls, open_file):
         open_file.seek(0, 2)
-        size = open_file.tell()
-        
+        size = open_file.tell() 
         return size
 
     @classmethod
