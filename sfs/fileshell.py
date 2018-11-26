@@ -36,7 +36,13 @@ def command_parse(command):
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
-            print(Disk.disk_read(mydisk, blocknum))
+            if len(clist) == 3:
+                # try:
+                bit32 = bool(clist[2])
+                
+                print(Disk.disk_read(mydisk, blocknum, bit32))
+            else:
+                print(Disk.disk_read(mydisk, blocknum))
 
         elif clist[0] == 'disk_write':
             blocknum = int(clist[1])
@@ -101,11 +107,11 @@ def usage():
     print('\tdisk_create <new disk name> <number of blocks>')
     print('\tdisk_open <disk file path>')
     print('\tdisk_close <disk file path>')
-    print('\tdisk_read <block number>')
+    print('\tdisk_read <block number> <bit32 (default is False)>')
     print('\tdisk_write <block number> <data to write>')
     # print('\tdisk_size')
     print('\tfs_format <disk file path>')
-    print('\tfs_create')
+    print('\tfs_create <-- will use the current open disk')
     print('\tfs_findfree <bitmap>')
     print('\tread_script <script file path>')
     print('\texit')

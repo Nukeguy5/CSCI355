@@ -2,7 +2,7 @@
 import numpy as np
 # import blocks
 from blockbitmap import BlockBitMap
-# import struct
+import struct
 
 class Disk:
 
@@ -25,17 +25,21 @@ class Disk:
         return fl
 
     @classmethod
-    def disk_read(cls, open_file, blockNumber):
+    def disk_read(cls, open_file, blockNumber, bit32=False):
         start_address = Disk.BLOCK_SIZE * blockNumber
-        block_data = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
         
         open_file.seek(start_address)
 
-        for i in range(Disk.BLOCK_SIZE):
-            # byte_arr = open_file.read(4)
-            # block_data[i] = struct.unpack('i', byte_arr)[0]
-            byte = open_file.read(1)
-            block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
+        if not bit32:
+            block_data = np.zeros(shape=(Disk.BLOCK_SIZE), dtype=Disk.CELLSIZE)
+            for i in range(Disk.BLOCK_SIZE):
+                byte = open_file.read(1)
+                block_data[i] = int.from_bytes(byte, Disk.BYTEORDER)
+        else:
+            block_data = np.zeros(shape=(Disk.BLOCK_SIZE//4), dtype=Disk.CELLSIZE)
+            for i in range(Disk.BLOCK_SIZE//4):
+                byte_arr = open_file.read(4)
+                block_data[i] = struct.unpack('i', byte_arr)[0]
 
         return block_data
 

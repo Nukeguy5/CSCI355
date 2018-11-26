@@ -30,15 +30,15 @@ class Inode:
     # returns a bytearray
     @classmethod
     def make_inode(cls, is_valid=NOT_VALID, direct_blocks=[0]*5, indirect_loc=0):
-        arr = np.zeros(shape=(Inode.size), dtype=CELLSIZE)
-        arr[0] = is_valid
-        arr[1] = Inode.size
+        block = np.zeros(shape=(Inode.size), dtype=CELLSIZE)
+        block[0] = is_valid
+        block[1] = Inode.size
         index = 0
         for i in range(2, len(direct_blocks)):
-            arr[i] = direct_blocks[index]
+            block[i] = direct_blocks[index]
             index += 1
-        arr[2 + len(direct_blocks)] = indirect_loc
-        return arr
+        block[2 + len(direct_blocks)] = indirect_loc
+        return block
 
 
 class InodeBlock:

@@ -57,44 +57,56 @@ def fs_create(open_file):
     # Inode 0 is used as Error data inode
     # Inode 1 is root directory
 
-    disk_blocks = add_disk_to_buffer(open_file)
-
-    sblock = disk_blocks[0]
+    sblock = Disk.disk_read(open_file, 0)
     dentry = sblock[4]
 
     # Add Inode Bitmap to buffer
     inodeNum = 1
     inode_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 2)
-    inode_bitmap.blockBitMap = disk_blocks[2]
+    inode_bitmap.blockBitMap = Disk.disk_read(open_file, inode_bitmap.blockNumber)
     inode_bitmap.setUsed(inodeNum)  # Mark inode as used
-    disk_blocks[2] = inode_bitmap.saveToDisk()
+    Disk.disk_write(open_file, inode_bitmap.blockNumber, inode_bitmap.saveToDisk())
 
     # Find inode
     inode_blockStart = sblock[8]
     ninodes_in_block = Disk.BLOCK_SIZE//blocks.Inode.size
     inode_blockNum = inodeNum//ninodes_in_block
     real_blockNum = inode_blockNum + inode_blockStart
-    inode_block = disk_blocks[real_blockNum]
-    inode = inode_block[inodeNum*blocks.Inode.size:(inodeNum+1)*blocks.Inode.size]
+    inode_block = Disk.disk_read(open_file, real_blockNum)
+    # inode = inode_block[inodeNum*blocks.Inode.size:(inodeNum+1)*blocks.Inode.size]
 
     # Make changes to Inode
-    inode[0] = blocks.Inode.DIR
-    inode[2] = dentry
+    inode_block[inodeNum*blocks.Inode.size+0] = blocks.Inode.DIR
+    inode_block[inodeNum*blocks.Inode.size+2] = dentry
+    Disk.disk_write(open_file, real_blockNum, inode_block)
 
     # Add Data Bitmap to buffer
     data_bitmap = BlockBitMap(Disk.BLOCK_SIZE, 1)
-    data_bitmap.blockBitMap = disk_blocks[1]
+    data_bitmap.blockBitMap = Disk.disk_read(open_file, 1)
     data_bitmap.setUsed(0)  # Mark data block as used
-    disk_blocks[1] = data_bitmap.saveToDisk()
+    Disk.disk_write(open_file, 1, data_bitmap.saveToDisk())
 
     # Find datablock
     data_blockStart = sblock[7]
-    data_block = disk_blocks[data_blockStart]
+    real_dblockNum = data_blockStart + dentry
+    data_block = Disk.disk_read(open_file, real_dblockNum)
 
     # Change data block
+    ptr_div = Disk.BLOCK_SIZE//32  # to use to divide the data block 
+    
+    fs_dict = {'.':1, '..':1, 'etc':2, 'bin':3}
 
+    for i in range(len(fs_dict)):
+        fs_lst = [item for item in fs_dict]
+        # node = data_block[ptr_div*i:ptr_div*(i+1)] 
+        data_block[ptr_div*i] = fs_dict[fs_lst[i]]
+        str_conv = [int.from_bytes(bytes(char, Disk.ENCODING), Disk.BYTEORDER) for char in fs_lst[i]]
+        
+        for j in range(len(str_conv)):
+            # node[j+1] = str_conv[j]
+            data_block[ptr_div*i+(j+1)] = str_conv[j]
 
-    pass
+    Disk.disk_write(open_file, real_dblockNum, bytearray(data_block))
 
 def fs_delete(file):
     pass
@@ -122,16 +134,16 @@ def fs_findfree(open_file, blocknum):
     return free_space
 
 # Have to read the whole file and rewrite it to disk because of how python works
-def add_disk_to_buffer(open_file):
-    sblock = Disk.disk_read(open_file, 0)  #read superblock to determine number of blocks on disk
-    nblocks = sblock[1]
-    disk_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE//4), dtype=Disk.CELLSIZE)
+# def add_disk_to_buffer(open_file):
+#     sblock = Disk.disk_read(open_file, 0)  #read superblock to determine number of blocks on disk
+#     nblocks = sblock[1]
+#     disk_blocks = np.zeros(shape=(nblocks, Disk.BLOCK_SIZE//4), dtype=Disk.CELLSIZE)
 
-    for i in range(nblocks):
-        disk_read = Disk.disk_read(open_file, i)
-        disk_blocks[i] = disk_read
+#     for i in range(nblocks):
+#         disk_read = Disk.disk_read(open_file, i)
+#         disk_blocks[i] = disk_read
     
-    return disk_blocks
+#     return disk_blocks
 
-def find_inode(inode_blockStart, ):
-    pass
+# def find_inode(inode_blockStart, ):
+#     pass
