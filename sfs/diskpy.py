@@ -1,7 +1,5 @@
 
 import numpy as np
-# import blocks
-from blockbitmap import BlockBitMap
 import struct
 
 class Disk:
