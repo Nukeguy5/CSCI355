@@ -29,10 +29,12 @@ def command_parse(command):
             print('\t' + 'Opening ' + filepath + ' ...')
             mydisk = Disk.disk_open(filepath)
 
-        elif clist[0] == 'disk_create':
+        elif clist[0] == 'disk_init':
             disk_name = clist[1]
             nblocks = int(clist[2])
+            print("Initializing Disk {}...".format(disk_name))
             Disk.disk_init(disk_name, nblocks)
+            print(disk_name, 'initialized.')
         
         elif clist[0] == 'disk_read':
             blocknum = int(clist[1])
@@ -53,14 +55,6 @@ def command_parse(command):
             else:
                 print('\tERROR: Cannot write to Superblock...')
 
-        # elif clist[0] == 'disk_size':
-        #     size = mydisk.disk_size()
-        #     total_bytes = size*Disk.DISK_BLOCK_SIZE
-        #     print('\nDisk:', mydisk.disk_name)
-        #     print('\tBlocks:', size)
-        #     print('\tBytes:', total_bytes)
-        #     print()
-        
         elif clist[0] == 'disk_close':
             filepath = ' '.join(clist[1:])
             Disk.disk_close(filepath)
@@ -74,12 +68,6 @@ def command_parse(command):
             else:
                 print('\tFormat Canceled.')
 
-        elif clist[0] == 'fs_create':
-            filepath = ' '.join(clist[1:])
-            print('\tCreating File System...')
-            sfs.fs_create(mydisk)
-            print('\tFile System Created.')
-
         elif clist[0] == 'fs_findfree':
             if clist[1] == 'data':
                 free_space_data = sfs.fs_findfree(mydisk, 1)
@@ -89,13 +77,22 @@ def command_parse(command):
                 print(free_space_inode)
             else:
                 print("\tInvalid Bitmap...")
+                print("\tUse 'data' or 'inode'")
 
         elif clist[0] == 'read_script':
             filepath = ' '.join(clist[1:])
+            print('Executing...')
             read_script(filepath)
+
+        elif clist[0] == 'dir':
+            print('\troot/')
+
+        elif clist[0] == 'cmds':
+            usage()
 
         else:
             print("\t'" + command + "' is not a command...")
+            print("\tUse 'cmds' to display list of commands")
     
     except (AttributeError, IndexError):
         usage()
@@ -104,14 +101,15 @@ def command_parse(command):
 
 def usage():
     print('\nCommands:')
-    print('\tdisk_create <new disk name> <number of blocks>')
+    print('\tcmds')
+    print('\tdir')
+    print('\tdisk_init <new disk name> <number of blocks>')
     print('\tdisk_open <disk file path>')
     print('\tdisk_close <disk file path>')
-    print('\tdisk_read <block number> <bit32 (default is False)>')
+    print('\tdisk_read <block number> <bit32? (default is False)>')
     print('\tdisk_write <block number> <data to write>')
-    # print('\tdisk_size')
+
     print('\tfs_format <disk file path>')
-    print('\tfs_create <-- will use the current open disk')
     print('\tfs_findfree <bitmap>')
     print('\tread_script <script file path>')
     print('\texit')
@@ -120,7 +118,6 @@ def usage():
 
 if __name__ == '__main__':
     command = ''
-    usage()
     while True:
         command = input('sfs> ')
         if command == 'exit':
