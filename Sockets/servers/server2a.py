@@ -41,8 +41,7 @@ class ClientThread(Thread):
             elif cmd == 'RETR':
                 with open(param, 'r') as f:
                     fdata = ''.join(f.readlines())
-                notify_str = "Contents of file '" + param + "': " + fdata
-                self.sock.send(bytes(notify_str, 'utf-8'))
+                self.sock.send(bytes(fdata, 'utf-8'))
             elif cmd == 'STOR':
                 pass 
 
