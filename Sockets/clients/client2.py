@@ -9,8 +9,9 @@ def sendCmd(socket, astr):
     # receive data from the server 
     if ss[0] == 'RETR':
         answer = socket.recv(1024).decode('utf-8')
+        data = socket.recv(1024).decode('utf-8')
         with open(ss[1], 'w') as f:
-            f.write(answer)
+            f.write(data)
     else:
         answer =  socket.recv(1024).decode('utf-8')
 
