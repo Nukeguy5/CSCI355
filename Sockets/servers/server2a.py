@@ -39,9 +39,10 @@ class ClientThread(Thread):
                 for a1 in bblist:
                     bb += ' ' + a1
             elif cmd == 'RETR':
+                self.sock.send(bytes('Sending...', 'utf-8'))
                 with open(param, 'r') as f:
-                    fdata = ''.join(f.readlines())
-                self.sock.send(bytes(fdata, 'utf-8'))
+                    fdata = f.readline()
+                    self.sock.send(bytes(fdata, 'utf-8'))
             elif cmd == 'STOR':
                 pass 
 
